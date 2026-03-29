@@ -18,6 +18,13 @@ from enum import Enum
 from typing import Dict, List, Optional, Any
 
 
+class ProcessingMode(Enum):
+    """Processing modes for context management."""
+    MANAGER = "manager"        # Use ContextWindowManager (pre-processing)
+    RLM = "rlm"                # Use RLM (recursive LLM calls)
+    AUTO = "auto"              # Auto-switch based on token size
+
+
 class ChunkingStrategy(Enum):
     """Available chunking strategies."""
     FIXED_SIZE = "fixed_size"

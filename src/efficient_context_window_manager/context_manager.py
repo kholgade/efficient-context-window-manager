@@ -18,7 +18,7 @@ Related files:
 from typing import List, Optional, Callable, Dict, Any
 from .types import (
     Chunk, ContextWindow, CompressionConfig, ChunkingStrategy,
-    ContextStrategyEnum, ProcessingRequest, CompressionMethod
+    ContextStrategyEnum, ProcessingRequest, CompressionMethod, ProcessingMode
 )
 from .tokenizers.base import BaseTokenizer
 from .tokenizers.auto import AutoTokenizer
@@ -58,6 +58,8 @@ class ContextWindowManager:
         context_strategy: ContextStrategyEnum = ContextStrategyEnum.GREEDY,
         compression_config: Optional[CompressionConfig] = None,
         embedding_fn: Optional[Callable] = None,
+        mode: ProcessingMode = ProcessingMode.AUTO,
+        rlm_threshold: int = 50000,
     ):
         """
         Initialize context window manager.
@@ -72,11 +74,15 @@ class ContextWindowManager:
             context_strategy: How to fill context windows
             compression_config: Optional compression settings
             embedding_fn: For semantic chunking
+            mode: Processing mode (MANAGER, RLM, or AUTO)
+            rlm_threshold: Token count above which to use RLM (when mode=AUTO)
         """
         # Tokenizer
         self.tokenizer = tokenizer or AutoTokenizer(model_name)
         self.model_name = model_name
         self.max_window_tokens = max_window_tokens
+        self.mode = mode
+        self.rlm_threshold = rlm_threshold
 
         # Chunking
         self.chunking_strategy = chunking_strategy
@@ -322,6 +328,23 @@ class ContextWindowManager:
 
         window.current_tokens = best_tokens
         return best_window
+
+    def should_use_rlm(self, document_size: int) -> bool:
+        """
+        Determine if RLM should be used based on mode and document size.
+
+        Args:
+            document_size: Size of document in characters
+
+        Returns:
+            True if RLM should be used, False if Manager should be used
+        """
+        if self.mode == ProcessingMode.RLM:
+            return True
+        elif self.mode == ProcessingMode.MANAGER:
+            return False
+        else:  # AUTO
+            return document_size > self.rlm_threshold
 
     def estimate_tokens(self, text: str) -> int:
         """Estimate tokens for text."""

@@ -139,6 +139,123 @@ print(q3['response'])
 
 ---
 
+## Processing Modes
+
+The package supports 3 modes for handling different document sizes and latency requirements:
+
+### Mode 1: MANAGER (Default - Chunking + Compression)
+
+Automatically chunks documents, applies compression if needed, and makes a single LLM call.
+
+**When to use:**
+- Document size: 4k-50k tokens
+- Priority: Speed (single-pass)
+- Cost predictability: Important
+- Example: Small to medium reports, articles
+
+```python
+from efficient_context_window_manager import ContextWindowManager, ProcessingMode
+
+# Create manager with MANAGER mode
+manager = ContextWindowManager(
+    model_name="gpt-3.5-turbo",
+    mode=ProcessingMode.MANAGER,  # Explicit (default)
+    max_window_tokens=4096,
+)
+
+# Process document
+result = efficient_llm_call(
+    context_manager=manager,
+    documents=document,
+    query="What are the key points?",
+)
+
+print(result['response'])
+print(f"Mode used: {result['processing_mode']}")  # "manager"
+```
+
+### Mode 2: RLM (Recursive Language Model Calls)
+
+Uses adaptive strategies where the LLM recursively calls itself with peeking, grepping, and partitioning.
+
+**When to use:**
+- Document size: 50k+ tokens
+- Priority: Handling large data
+- Cost: Lower at scale (filters text before tokenization)
+- Example: Large books, entire codebases, exhaustive analysis
+
+```python
+from efficient_context_window_manager import ContextWindowManager, ProcessingMode
+
+# Create manager with RLM mode
+manager = ContextWindowManager(
+    model_name="gpt-4",
+    mode=ProcessingMode.RLM,  # Use RLM mode
+    max_window_tokens=8192,
+)
+
+# Process large document
+result = efficient_llm_call(
+    context_manager=manager,
+    documents=large_document,  # 100k+ tokens
+    query="Summarize the entire content",
+)
+
+print(result['response'])
+print(f"LLM calls made: {result['metadata']['llm_calls']}")
+print(f"Strategy used: {result['metadata']['strategy']}")  # "auto", "grep", etc.
+```
+
+### Mode 3: AUTO (Automatic Switching)
+
+Automatically switches between MANAGER and RLM based on document token count.
+
+**When to use:**
+- Unknown document sizes
+- Don't know in advance if small or large
+- Want optimal behavior automatically
+- Example: General purpose system
+
+```python
+from efficient_context_window_manager import ContextWindowManager, ProcessingMode
+
+# Create manager with AUTO mode
+manager = ContextWindowManager(
+    model_name="claude-3-opus-20250219",
+    mode=ProcessingMode.AUTO,      # Automatic switching
+    rlm_threshold=50000,            # Use RLM above 50k tokens
+    max_window_tokens=100000,       # Claude's limit
+)
+
+# Process document (can be small or large)
+result = efficient_llm_call(
+    context_manager=manager,
+    documents=document,             # Could be 1k or 500k tokens
+    query="Analyze this",
+)
+
+# Check which mode was actually used
+if result['processing_mode'] == 'manager':
+    print("Used chunking + compression (small doc)")
+    print(f"Chunks used: {result['chunks_used']}")
+else:
+    print("Used recursive strategy (large doc)")
+    print(f"Strategy: {result['metadata']['strategy']}")
+```
+
+### Mode Comparison
+
+| Aspect | MANAGER | RLM | AUTO |
+|--------|---------|-----|------|
+| **Doc Size** | 4k-50k tokens | 50k+ tokens | Any |
+| **Latency** | Single-pass (fast) | Multi-pass (slower) | Depends on size |
+| **Cost** | Predictable | Lower at scale | Optimal |
+| **Code** | Simple | Simple | Simple |
+| **Adaptability** | Fixed | High (per-query) | Automatic |
+| **Best for** | Reports, articles | Books, codebases | Unknown sizes |
+
+---
+
 ## Common Use Cases
 
 ### Use Case 1: PDF Analysis

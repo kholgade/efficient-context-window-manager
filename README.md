@@ -47,6 +47,7 @@ With this package: `Document → Smart chunks → Context window respecting mode
 
 | Feature | Description |
 |---------|-------------|
+| **3 Processing Modes** | MANAGER (chunking/compression), RLM (recursive calls), AUTO (switches based on size) |
 | **4 Chunking Strategies** | Recursive (semantic-aware), Sliding Window, Fixed-Size, Semantic (embedding-based) |
 | **Model-Agnostic** | Works with Claude, GPT, Llama, Ollama, or any model |
 | **Auto Tokenization** | Automatically detects and uses the right tokenizer |
@@ -215,6 +216,64 @@ adapter = OllamaAdapter(
 )
 
 result = adapter.process_with_context(document, query)
+```
+
+## Processing Modes
+
+The package offers 3 processing modes that automatically optimize based on document size:
+
+### MANAGER Mode (Chunking + Compression)
+Use pre-processing: chunks documents, compresses if needed, then calls LLM once.
+- **Best for**: Small to medium documents (4k-50k tokens)
+- **Latency**: Single-pass (fast)
+- **Cost**: Predictable
+- **Setup**: Minimal
+
+```python
+from efficient_context_window_manager import ContextWindowManager, ProcessingMode
+
+manager = ContextWindowManager(
+    model_name="gpt-3.5-turbo",
+    mode=ProcessingMode.MANAGER,
+)
+
+result = manager.call("query")  # Uses chunking + compression
+```
+
+### RLM Mode (Recursive Language Model Calls)
+Use runtime decomposition: LLM recursively calls itself with peeking, grepping, and partitioning strategies.
+- **Best for**: Large documents (50k+ tokens)
+- **Latency**: Multi-pass (slower but handles any size)
+- **Cost**: Lower at scale (string filtering before tokenization)
+- **Flexibility**: Adaptive strategies per query
+
+```python
+from efficient_context_window_manager import ContextWindowManager, ProcessingMode
+
+manager = ContextWindowManager(
+    model_name="gpt-4",
+    mode=ProcessingMode.RLM,
+)
+
+result = manager.call("query")  # Uses recursive strategies
+```
+
+### AUTO Mode (Automatic Switching)
+Automatically switches between MANAGER and RLM based on document token count.
+- **Best for**: Unknown document sizes
+- **Threshold**: Default 50k tokens (configurable)
+- **Automatic**: No manual mode selection needed
+
+```python
+from efficient_context_window_manager import ContextWindowManager, ProcessingMode
+
+manager = ContextWindowManager(
+    model_name="claude-3-opus-20250219",
+    mode=ProcessingMode.AUTO,           # Auto-switch based on size
+    rlm_threshold=50000,                # Use RLM above 50k tokens
+)
+
+result = manager.call("query")  # Automatically chooses best approach
 ```
 
 ## 🏆 Why This Package?

@@ -26,7 +26,7 @@ Example:
 
 __version__ = "0.1.0"
 
-from .types import Chunk, ContextWindow, CompressionConfig, ChunkingStrategy
+from .types import Chunk, ContextWindow, CompressionConfig, ChunkingStrategy, ProcessingMode
 from .context_manager import ContextWindowManager
 from .orchestrator import EfficientLLMCall, efficient_llm_call, LLMProvider
 
@@ -39,4 +39,5 @@ __all__ = [
     "ContextWindow",
     "CompressionConfig",
     "ChunkingStrategy",
+    "ProcessingMode",
 ]

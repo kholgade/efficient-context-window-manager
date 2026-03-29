@@ -20,7 +20,8 @@ from typing import Dict, Any, Optional, List, Callable
 from enum import Enum
 
 from .context_manager import ContextWindowManager
-from .types import Chunk, ContextWindow
+from .types import Chunk, ContextWindow, ProcessingMode
+from .rlm.orchestrator import RLMOrchestrator
 
 
 class LLMProvider(Enum):
@@ -133,12 +134,8 @@ class EfficientLLMCall:
         """
         Make efficient LLM call with managed context.
 
-        Steps:
-        1. Prepare context (chunk documents if not already done)
-        2. Create context window respecting model limits
-        3. Format for API
-        4. Make call based on provider
-        5. Return response with metrics
+        Automatically selects between ContextWindowManager (chunking/compression)
+        and RLMOrchestrator (recursive calls) based on document size and mode.
 
         Args:
             query: User query/prompt
@@ -147,15 +144,27 @@ class EfficientLLMCall:
             **kwargs: Provider-specific arguments
 
         Returns:
-            Dict with keys:
-            - response: LLM response text
-            - tokens_used: Tokens used in request
-            - window_utilization: % of context used
-            - chunks_used: Number of chunks included
-            - model: Model name
-            - provider: LLM provider used
-            - metadata: Additional metrics
+            Dict with response, metrics, and mode used
         """
+        # Get total document size
+        total_size = sum(len(doc) for doc in self.documents)
+
+        # Determine whether to use RLM or Manager
+        use_rlm = self.context_manager.should_use_rlm(total_size)
+
+        if use_rlm:
+            return self._call_with_rlm(query, temperature, **kwargs)
+        else:
+            return self._call_with_manager(query, max_tokens, temperature, **kwargs)
+
+    def _call_with_manager(
+        self,
+        query: str,
+        max_tokens: int,
+        temperature: float,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """Use ContextWindowManager for context processing."""
         # Prepare if not already done
         if not self.chunks:
             self.prepare()
@@ -168,13 +177,128 @@ class EfficientLLMCall:
 
         # Make call based on provider
         if self.provider == LLMProvider.ANTHROPIC:
-            return self._call_anthropic(query, context_str, max_tokens, temperature, **kwargs)
+            result = self._call_anthropic(query, context_str, max_tokens, temperature, **kwargs)
         elif self.provider == LLMProvider.OPENAI:
-            return self._call_openai(query, context_str, max_tokens, temperature, **kwargs)
+            result = self._call_openai(query, context_str, max_tokens, temperature, **kwargs)
         elif self.provider == LLMProvider.OLLAMA:
-            return self._call_ollama(query, context_str, max_tokens, temperature, **kwargs)
+            result = self._call_ollama(query, context_str, max_tokens, temperature, **kwargs)
         else:
             raise ValueError(f"Unsupported provider: {self.provider}")
+
+        result["processing_mode"] = "manager"
+        return result
+
+    def _call_with_rlm(
+        self,
+        query: str,
+        temperature: float,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """Use RLM for recursive context processing."""
+        # Create RLM orchestrator with appropriate LLM call function
+        llm_call_fn = self._create_llm_callable(temperature, **kwargs)
+        rlm = RLMOrchestrator(
+            llm_call=llm_call_fn,
+            model_name=self.model_name,
+            max_recursion_depth=kwargs.get("max_recursion_depth", 5),
+            chunk_size=kwargs.get("rlm_chunk_size", 2000),
+        )
+
+        # Combine all documents
+        combined_doc = "\n\n---\n\n".join(self.documents)
+
+        # Process with RLM
+        rlm_result = rlm.process_document(
+            document=combined_doc,
+            query=query,
+            strategy=kwargs.get("rlm_strategy", "auto"),
+        )
+
+        return {
+            "response": rlm_result["response"],
+            "tokens_used": sum(len(doc) for doc in self.documents),
+            "model": self.model_name,
+            "provider": self.provider.value,
+            "processing_mode": "rlm",
+            "metadata": {
+                "llm_calls": rlm_result["llm_calls"],
+                "strategy": rlm_result["strategy"],
+                "strategies_used": rlm.get_stats()["strategies_used"],
+            }
+        }
+
+    def _create_llm_callable(self, temperature: float, **kwargs) -> Callable:
+        """Create a callable that invokes the appropriate LLM provider."""
+        if self.provider == LLMProvider.ANTHROPIC:
+            return self._create_anthropic_callable(temperature, **kwargs)
+        elif self.provider == LLMProvider.OPENAI:
+            return self._create_openai_callable(temperature, **kwargs)
+        elif self.provider == LLMProvider.OLLAMA:
+            return self._create_ollama_callable(temperature, **kwargs)
+        else:
+            raise ValueError(f"Unsupported provider: {self.provider}")
+
+    def _create_anthropic_callable(self, temperature: float, **kwargs) -> Callable:
+        """Create callable for Anthropic API."""
+        try:
+            import anthropic
+        except ImportError:
+            raise ImportError("anthropic library required: pip install anthropic")
+
+        client = anthropic.Anthropic()
+
+        def call_fn(prompt: str) -> str:
+            response = client.messages.create(
+                model=self.model_name,
+                max_tokens=kwargs.get("max_tokens", 1024),
+                temperature=temperature,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            return response.content[0].text
+
+        return call_fn
+
+    def _create_openai_callable(self, temperature: float, **kwargs) -> Callable:
+        """Create callable for OpenAI API."""
+        try:
+            from openai import OpenAI
+        except ImportError:
+            raise ImportError("openai library required: pip install openai")
+
+        client = OpenAI()
+
+        def call_fn(prompt: str) -> str:
+            response = client.chat.completions.create(
+                model=self.model_name,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=kwargs.get("max_tokens", 1024),
+                temperature=temperature,
+            )
+            return response.choices[0].message.content
+
+        return call_fn
+
+    def _create_ollama_callable(self, temperature: float, **kwargs) -> Callable:
+        """Create callable for Ollama API."""
+        import requests
+
+        base_url = kwargs.get("base_url", "http://localhost:11434")
+
+        def call_fn(prompt: str) -> str:
+            response = requests.post(
+                f"{base_url}/api/generate",
+                json={
+                    "model": self.model_name,
+                    "prompt": prompt,
+                    "temperature": temperature,
+                    "stream": False,
+                },
+                timeout=300,
+            )
+            response.raise_for_status()
+            return response.json().get("response", "")
+
+        return call_fn
 
     def _call_anthropic(
         self,
