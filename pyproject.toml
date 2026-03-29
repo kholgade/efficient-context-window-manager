@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "efficient-context-window-manager"
+version = "0.1.0"
+description = "Break large context windows into manageable chunks while honoring model limits and preserving coherence"
+requires-python = ">=3.9"
+authors = [{name = "Context Window Manager Contributors"}]
+license = {text = "MIT"}
+dependencies = [
+    "tiktoken>=0.5.0",
+    "transformers>=4.30.0",
+]
+optional-dependencies = {
+    "anthropic" = ["anthropic>=0.7.0"],
+    "openai" = ["openai>=1.0.0"],
+    "dev" = ["black>=23.0", "ruff>=0.1.0", "mypy>=1.0"],
+}
+
+[project.urls]
+Repository = "https://github.com/kholgade/efficient-context-window-manager"
+
+[tool.black]
+line-length = 100
+target-version = ["py39"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+select = ["E", "F", "W"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
