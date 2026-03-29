@@ -189,7 +189,7 @@ class RecursiveChunker(BaseChunker):
                 overlapped.append(chunk)
             else:
                 # Create overlapping chunk by combining with previous
-                prev_chunk = chunks[i - 1]
+                prev_chunk = overlapped[-1]  # Use already overlapped chunk
                 overlap_text = prev_chunk.content[-int(len(prev_chunk.content) * 0.2):]
                 combined = overlap_text + " " + chunk.content
 
@@ -197,8 +197,8 @@ class RecursiveChunker(BaseChunker):
                     Chunk(
                         content=combined,
                         token_count=self.tokenizer.count_tokens(combined),
-                        start_idx=chunk.start_idx,
-                        end_idx=chunk.end_idx,
+                        start_idx=i,  # Simplified: use chunk index
+                        end_idx=i + 1,  # Simplified: indicate this is chunk i
                         metadata={"chunk_index": i, "strategy": "recursive_overlapped"}
                     )
                 )

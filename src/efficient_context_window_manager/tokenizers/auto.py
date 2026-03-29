@@ -15,6 +15,7 @@ from .base import BaseTokenizer
 from .openai_tokenizer import OpenAITokenizer
 from .huggingface_tokenizer import HuggingFaceTokenizer
 from .anthropic_tokenizer import AnthropicTokenizer
+from .simple import SimpleTokenizer
 
 
 def AutoTokenizer(model_name: str, cache_enabled: bool = True) -> BaseTokenizer:
@@ -45,17 +46,26 @@ def AutoTokenizer(model_name: str, cache_enabled: bool = True) -> BaseTokenizer:
     if "claude" in model_lower:
         return AnthropicTokenizer(model_name, cache_enabled)
 
-    # HuggingFace models (most other open-source)
-    # Heuristic: if contains '/' (org/model) or known HF model names
-    if "/" in model_name or any(hf in model_lower for hf in ["llama", "mistral", "phi", "falcon"]):
-        return HuggingFaceTokenizer(model_name, cache_enabled)
+    # Local/Ollama models - use simple estimation
+    # These are typically available locally and don't require transformers
+    if any(local_model in model_lower for local_model in ["llama", "mistral", "phi", "falcon", "ollama"]):
+        # Try HuggingFace first if available, fallback to SimpleTokenizer
+        try:
+            return HuggingFaceTokenizer(model_name, cache_enabled)
+        except (ImportError, OSError):
+            # transformers not available or model not found, use simple estimation
+            return SimpleTokenizer(model_name, cache_enabled)
 
-    # Default to HuggingFace for unknown models
-    try:
-        return HuggingFaceTokenizer(model_name, cache_enabled)
-    except Exception:
-        # Last resort: return a generic tokenizer
-        return BaseTokenizer(model_name, cache_enabled)
+    # HuggingFace models with '/' in name (org/model format)
+    if "/" in model_name:
+        try:
+            return HuggingFaceTokenizer(model_name, cache_enabled)
+        except (ImportError, OSError):
+            # transformers not available or model not found, use simple estimation
+            return SimpleTokenizer(model_name, cache_enabled)
+
+    # Default to SimpleTokenizer for unknown models
+    return SimpleTokenizer(model_name, cache_enabled)
 
 
 __all__ = ["AutoTokenizer"]
