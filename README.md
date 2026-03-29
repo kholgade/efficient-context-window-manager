@@ -60,6 +60,7 @@ With this package: `Document → Smart chunks → Context window respecting mode
 ## 📖 Documentation
 
 - **[HOWTO Guide](HOWTO.md)** ← Start here for comprehensive guide
+- **[Ollama Large Documents Guide](OLLAMA_GUIDE.md)** ⭐ ← For local Ollama users
 - **[Implementation Summary](IMPLEMENTATION_SUMMARY.md)** ← Technical architecture
 - **[Examples](examples/)** ← Working code samples
 - **[API Reference](#api-reference)** ← Complete API docs
@@ -438,31 +439,49 @@ tokenizer = AutoTokenizer("meta-llama/Llama-2-7b")   # HuggingFace
 
 ## 💡 Common Use Cases
 
+### Cloud APIs
 See [HOWTO.md](HOWTO.md) for detailed walkthroughs:
+- **PDF/Document Analysis** - Extract text and ask questions
+- **Multi-Document Analysis** - Query across multiple sources
+- **RAG Systems** - Combine retrieval with efficient context management
+- **Chatbots** - Manage conversation history with large context
+- **Code Analysis** - Process large codebases with context
 
-1. **PDF/Document Analysis** - Extract text and ask questions
-2. **Multi-Document Analysis** - Query across multiple sources
-3. **RAG Systems** - Combine retrieval with efficient context management
-4. **Local Private Processing** - Use Ollama for privacy
-5. **Chatbots** - Manage conversation history with large context
-6. **Code Analysis** - Process large codebases with context
+### Local Ollama Models ⭐
+See [OLLAMA_GUIDE.md](OLLAMA_GUIDE.md) for complete guide:
+- **Handle 100k tokens with 8k limit** - Process large docs with Ollama
+- **Local Private Processing** - No API calls, all local inference
+- **Cost-Free LLM Usage** - Run models locally for free
+- **Batch Processing** - Process multiple documents efficiently
 
 ## 🎓 Examples
 
 Working examples in `examples/` directory:
 
+### Quick Start Examples
 ```bash
+# Efficient LLM calls (recommended starting point)
+python examples/efficient_llm_call_demo.py
+
 # Basic chunking strategies demo
 python examples/basic_usage.py
 
 # Anthropic Claude integration
 python examples/with_anthropic.py
-
-# Efficient LLM calls (recommended starting point)
-python examples/efficient_llm_call_demo.py
 ```
 
-Or check [HOWTO.md](HOWTO.md) for step-by-step guides.
+### Ollama Examples (Processing 100k tokens with 8k limit)
+```bash
+# Comprehensive Ollama guide with 7 examples
+python examples/ollama_large_documents.py
+
+# Production patterns and real-world scenarios
+python examples/ollama_practical_guide.py
+```
+
+See documentation for step-by-step guides:
+- [OLLAMA_GUIDE.md](OLLAMA_GUIDE.md) ← Start here for local models
+- [HOWTO.md](HOWTO.md) ← Start here for general usage
 
 ## Key Concepts
 
