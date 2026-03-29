@@ -28,9 +28,13 @@ __version__ = "0.1.0"
 
 from .types import Chunk, ContextWindow, CompressionConfig, ChunkingStrategy
 from .context_manager import ContextWindowManager
+from .orchestrator import EfficientLLMCall, efficient_llm_call, LLMProvider
 
 __all__ = [
     "ContextWindowManager",
+    "EfficientLLMCall",
+    "efficient_llm_call",
+    "LLMProvider",
     "Chunk",
     "ContextWindow",
     "CompressionConfig",

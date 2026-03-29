@@ -35,6 +35,48 @@ pip install efficient-context-window-manager[openai]
 
 ## Quick Start
 
+### Simplest: One-Shot LLM Call
+
+```python
+from efficient_context_window_manager import ContextWindowManager, efficient_llm_call
+
+# Create manager (auto-detects tokenizer)
+manager = ContextWindowManager(model_name="claude-3-opus-20250219")
+
+# Make efficient LLM call with context
+result = efficient_llm_call(
+    context_manager=manager,
+    documents=["Your document 1", "Your document 2"],  # Add context
+    query="What are the key points?",
+)
+
+print(result['response'])  # Claude's answer
+print(f"Used {result['tokens_used']} tokens")
+```
+
+### With Context Accumulation
+
+```python
+from efficient_context_window_manager import ContextWindowManager, EfficientLLMCall
+
+manager = ContextWindowManager(model_name="claude-3-opus-20250219")
+call = EfficientLLMCall(context_manager=manager, model_name="claude-3-opus-20250219")
+
+# Add context progressively
+call.add_context("Document 1: ...")
+call.add_context("Document 2: ...")
+call.add_context("Document 3: ...")
+
+# Make call
+result = call.call(query="What are the key findings?")
+
+# Make another call with same context
+result2 = call.call(query="How do these relate to X?")
+
+# Clear for new context
+call.clear_context()
+```
+
 ### Basic Chunking
 
 ```python
@@ -120,6 +162,8 @@ result = adapter.process_with_context(document, query)
 ```
 efficient_context_window_manager/
 ├── types.py                 # Core data structures
+├── orchestrator.py          # High-level LLM call management ⭐ NEW
+├── context_manager.py       # Main window orchestrator
 ├── tokenizers/              # Token counting abstractions
 │   ├── base.py              # BaseTokenizer interface
 │   ├── openai_tokenizer.py  # OpenAI/GPT tokenization
@@ -352,11 +396,69 @@ The package implements techniques from:
 4. **"Beyond the Limits: Context Length Extension Survey"** (2402.02244)
    - Comprehensive context management techniques
 
+## Orchestrator: Simple LLM Calls
+
+### `efficient_llm_call()` - One-Shot Function
+
+Simple function for making a single efficient LLM call:
+
+```python
+from efficient_context_window_manager import efficient_llm_call, ContextWindowManager
+
+result = efficient_llm_call(
+    context_manager=manager,
+    documents=["doc1", "doc2"],
+    query="Your question",
+    model_name="claude-3-opus-20250219",  # Optional
+    provider="anthropic",                  # Optional - auto-detected
+)
+
+# Returns: {response, tokens_used, window_utilization, chunks_used, ...}
+```
+
+### `EfficientLLMCall` - Class for Reuse
+
+Class for accumulating context and making multiple queries:
+
+```python
+from efficient_context_window_manager import EfficientLLMCall, ContextWindowManager
+
+call = EfficientLLMCall(
+    context_manager=manager,
+    model_name="gpt-4",
+)
+
+# Accumulate context
+call.add_context("Document 1...")
+call.add_context("Document 2...")
+
+# Query 1
+result1 = call.call("First question?")
+
+# Query 2 - reuses same context
+result2 = call.call("Second question?")
+
+# Clear for new context
+call.clear_context()
+
+# Get stats
+stats = call.get_stats()
+```
+
+**Features:**
+- Method chaining: `call.add_context(...).add_context(...).call(...)`
+- Auto-detects LLM provider from model name
+- Prepares context on-demand
+- Supports multiple consecutive queries
+- Returns detailed metrics
+
+---
+
 ## API Reference
 
 ### ContextWindowManager
 
-Main orchestrator class.
+Main context window orchestrator class.
 
 **Methods:**
 - `process_document(document: str) -> List[Chunk]`
