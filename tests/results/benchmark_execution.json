@@ -1,6 +1,6 @@
 {
   "test_suite": "Complete Benchmark Suite",
-  "timestamp": "2026-03-29T13:32:01.557774",
+  "timestamp": "2026-03-29T13:32:51.274221",
   "tests_run": {
     "speed": "\u2717",
     "token_optimization": "\u2717",
@@ -14,11 +14,11 @@
           "without_package": {
             "tokenize_time": 9.5367431640625e-07,
             "token_count": 325,
-            "chunking_time": 2.9087066650390625e-05,
+            "chunking_time": 2.8371810913085938e-05,
             "chunks_created": 1,
-            "context_selection_time": 1.430511474609375e-06,
+            "context_selection_time": 1.1920928955078125e-06,
             "chunks_selected": 1,
-            "total_operation_time": 3.147125244140625e-05,
+            "total_operation_time": 3.0517578125e-05,
             "estimated_code_lines": 200,
             "estimated_dev_hours": 2.5,
             "error_prone": true,
@@ -26,15 +26,15 @@
             "compression_supported": false
           },
           "with_package": {
-            "setup_time": 0.8855059146881104,
-            "tokenize_time": 4.0531158447265625e-06,
-            "chunking_time": 8.20159912109375e-05,
+            "setup_time": 0.903125524520874,
+            "tokenize_time": 5.245208740234375e-06,
+            "chunking_time": 8.7738037109375e-05,
             "chunks_created": 1,
-            "context_selection_time": 8.106231689453125e-06,
+            "context_selection_time": 9.298324584960938e-06,
             "chunks_selected": 1,
             "cached_tokenize_time": 4.76837158203125e-07,
-            "cache_speedup": 8.5,
-            "total_operation_time": 0.8856000900268555,
+            "cache_speedup": 11.0,
+            "total_operation_time": 0.9032278060913086,
             "estimated_code_lines": 3,
             "estimated_dev_hours": 0.08,
             "error_prone": false,
@@ -45,23 +45,23 @@
           "improvements": {
             "tokenization": {
               "without": 0.00095367431640625,
-              "with": 0.0040531158447265625,
-              "speedup": 0.23529411764705882
+              "with": 0.005245208740234375,
+              "speedup": 0.18181818181818182
             },
             "chunking": {
-              "without": 0.029087066650390625,
-              "with": 0.0820159912109375,
-              "speedup": 0.3546511627906977
+              "without": 0.028371810913085938,
+              "with": 0.087738037109375,
+              "speedup": 0.3233695652173913
             },
             "context_selection": {
-              "without": 0.001430511474609375,
-              "with": 0.008106231689453125,
-              "speedup": 0.17647058823529413
+              "without": 0.0011920928955078125,
+              "with": 0.009298324584960938,
+              "speedup": 0.1282051282051282
             },
             "total_time": {
-              "without": 0.03147125244140625,
-              "with": 885.6000900268555,
-              "speedup": 3.553664096900882e-05
+              "without": 0.030517578125,
+              "with": 903.2278060913086,
+              "speedup": 3.3787243837259513e-05
             },
             "development": {
               "code_lines_without": 200,
@@ -81,13 +81,13 @@
         "medium": {
           "document": "Ollama Medium",
           "without_package": {
-            "tokenize_time": 9.5367431640625e-07,
+            "tokenize_time": 1.430511474609375e-06,
             "token_count": 3250,
-            "chunking_time": 0.00018215179443359375,
+            "chunking_time": 0.00019311904907226562,
             "chunks_created": 2,
-            "context_selection_time": 2.6226043701171875e-06,
+            "context_selection_time": 2.384185791015625e-06,
             "chunks_selected": 2,
-            "total_operation_time": 0.0001857280731201172,
+            "total_operation_time": 0.00019693374633789062,
             "estimated_code_lines": 200,
             "estimated_dev_hours": 2.5,
             "error_prone": true,
@@ -95,15 +95,15 @@
             "compression_supported": false
           },
           "with_package": {
-            "setup_time": 0.005329608917236328,
-            "tokenize_time": 8.344650268554688e-06,
-            "chunking_time": 0.0005021095275878906,
+            "setup_time": 0.0061876773834228516,
+            "tokenize_time": 9.298324584960938e-06,
+            "chunking_time": 0.0005342960357666016,
             "chunks_created": 3,
-            "context_selection_time": 7.3909759521484375e-06,
+            "context_selection_time": 9.059906005859375e-06,
             "chunks_selected": 3,
             "cached_tokenize_time": 4.76837158203125e-07,
-            "cache_speedup": 17.5,
-            "total_operation_time": 0.005847454071044922,
+            "cache_speedup": 19.5,
+            "total_operation_time": 0.0067403316497802734,
             "estimated_code_lines": 3,
             "estimated_dev_hours": 0.08,
             "error_prone": false,
@@ -113,24 +113,24 @@
           },
           "improvements": {
             "tokenization": {
-              "without": 0.00095367431640625,
-              "with": 0.008344650268554688,
-              "speedup": 0.11428571428571428
+              "without": 0.001430511474609375,
+              "with": 0.009298324584960938,
+              "speedup": 0.15384615384615385
             },
             "chunking": {
-              "without": 0.18215179443359375,
-              "with": 0.5021095275878906,
-              "speedup": 0.3627730294396961
+              "without": 0.19311904907226562,
+              "with": 0.5342960357666016,
+              "speedup": 0.3614457831325301
             },
             "context_selection": {
-              "without": 0.0026226043701171875,
-              "with": 0.0073909759521484375,
-              "speedup": 0.3548387096774194
+              "without": 0.002384185791015625,
+              "with": 0.009059906005859375,
+              "speedup": 0.2631578947368421
             },
             "total_time": {
-              "without": 0.1857280731201172,
-              "with": 5.847454071044922,
-              "speedup": 0.03176221153062057
+              "without": 0.19693374633789062,
+              "with": 6.740331649780273,
+              "speedup": 0.029217219058399066
             },
             "development": {
               "code_lines_without": 200,
@@ -150,13 +150,13 @@
         "large": {
           "document": "Ollama Large",
           "without_package": {
-            "tokenize_time": 9.5367431640625e-07,
+            "tokenize_time": 1.1920928955078125e-06,
             "token_count": 13000,
-            "chunking_time": 0.0007929801940917969,
+            "chunking_time": 0.0007584095001220703,
             "chunks_created": 6,
-            "context_selection_time": 5.0067901611328125e-06,
+            "context_selection_time": 5.7220458984375e-06,
             "chunks_selected": 2,
-            "total_operation_time": 0.0007989406585693359,
+            "total_operation_time": 0.0007653236389160156,
             "estimated_code_lines": 200,
             "estimated_dev_hours": 2.5,
             "error_prone": true,
@@ -164,15 +164,15 @@
             "compression_supported": false
           },
           "with_package": {
-            "setup_time": 0.00494837760925293,
-            "tokenize_time": 2.288818359375e-05,
-            "chunking_time": 0.0018224716186523438,
+            "setup_time": 0.005256175994873047,
+            "tokenize_time": 3.147125244140625e-05,
+            "chunking_time": 0.0018324851989746094,
             "chunks_created": 11,
-            "context_selection_time": 3.8623809814453125e-05,
+            "context_selection_time": 1.5497207641601562e-05,
             "chunks_selected": 4,
-            "cached_tokenize_time": 9.5367431640625e-07,
-            "cache_speedup": 24.0,
-            "total_operation_time": 0.0068323612213134766,
+            "cached_tokenize_time": 7.152557373046875e-07,
+            "cache_speedup": 44.0,
+            "total_operation_time": 0.007135629653930664,
             "estimated_code_lines": 3,
             "estimated_dev_hours": 0.08,
             "error_prone": false,
@@ -182,24 +182,24 @@
           },
           "improvements": {
             "tokenization": {
-              "without": 0.00095367431640625,
-              "with": 0.02288818359375,
-              "speedup": 0.041666666666666664
+              "without": 0.0011920928955078125,
+              "with": 0.03147125244140625,
+              "speedup": 0.03787878787878788
             },
             "chunking": {
-              "without": 0.7929801940917969,
-              "with": 1.8224716186523438,
-              "speedup": 0.43511250654107797
+              "without": 0.7584095001220703,
+              "with": 1.8324851989746094,
+              "speedup": 0.4138693728857663
             },
             "context_selection": {
-              "without": 0.0050067901611328125,
-              "with": 0.038623809814453125,
-              "speedup": 0.12962962962962962
+              "without": 0.0057220458984375,
+              "with": 0.015497207641601562,
+              "speedup": 0.36923076923076925
             },
             "total_time": {
-              "without": 0.7989406585693359,
-              "with": 6.832361221313477,
-              "speedup": 0.11693478033290296
+              "without": 0.7653236389160156,
+              "with": 7.135629653930664,
+              "speedup": 0.10725383407397507
             },
             "development": {
               "code_lines_without": 200,
@@ -221,15 +221,15 @@
         "small": {
           "document": "OpenAI Small",
           "without_package": {
-            "tokenize_time": 0.029904842376708984,
+            "tokenize_time": 0.029427528381347656,
             "token_count": 675,
-            "chunking_time": 5.412101745605469e-05,
+            "chunking_time": 5.364418029785156e-05,
             "chunks_created": 1,
             "api_calls_needed": 1,
             "estimated_cost": 0.0010125,
             "manual_api_handling_time": 0.05,
             "estimated_total_api_time": 0.05,
-            "total_operation_time": 0.07995896339416504,
+            "total_operation_time": 0.07948117256164551,
             "estimated_code_lines": 250,
             "estimated_dev_hours": 3.0,
             "error_handling": false,
@@ -238,21 +238,21 @@
             "cost_optimization": false
           },
           "with_package": {
-            "setup_time": 0.009944915771484375,
-            "tokenize_time": 7.152557373046875e-06,
+            "setup_time": 0.01020193099975586,
+            "tokenize_time": 6.9141387939453125e-06,
             "token_count": 675,
-            "chunking_time": 0.00014543533325195312,
+            "chunking_time": 0.00015020370483398438,
             "chunks_created": 1,
-            "context_selection_time": 6.9141387939453125e-06,
+            "context_selection_time": 4.935264587402344e-05,
             "chunks_selected": 1,
             "tokens_used": 674,
             "api_calls_with_compression": 1,
             "estimated_cost_with_compression": 0.000657,
             "tokens_saved": 237,
             "cost_savings": 0.000657,
-            "cached_tokenize_time": 9.5367431640625e-07,
-            "cache_speedup": 7.5,
-            "total_operation_time": 0.01010441780090332,
+            "cached_tokenize_time": 1.1920928955078125e-06,
+            "cache_speedup": 5.8,
+            "total_operation_time": 0.010408401489257812,
             "estimated_code_lines": 3,
             "estimated_dev_hours": 0.1,
             "error_handling": true,
@@ -262,14 +262,14 @@
           },
           "improvements": {
             "tokenization": {
-              "without": 29.904842376708984,
-              "with": 0.007152557373046875,
-              "speedup": 4181.0
+              "without": 29.427528381347656,
+              "with": 0.0069141387939453125,
+              "speedup": 4256.137931034483
             },
             "chunking": {
-              "without": 0.05412101745605469,
-              "with": 0.14543533325195312,
-              "speedup": 0.3721311475409836
+              "without": 0.05364418029785156,
+              "with": 0.15020370483398438,
+              "speedup": 0.35714285714285715
             },
             "api_efficiency": {
               "api_calls_without": 1,
@@ -302,15 +302,15 @@
         "medium": {
           "document": "OpenAI Medium",
           "without_package": {
-            "tokenize_time": 0.004959583282470703,
+            "tokenize_time": 0.004828691482543945,
             "token_count": 6750,
-            "chunking_time": 0.00047588348388671875,
+            "chunking_time": 0.0004820823669433594,
             "chunks_created": 2,
             "api_calls_needed": 2,
             "estimated_cost": 0.010125,
             "manual_api_handling_time": 0.05,
             "estimated_total_api_time": 0.1,
-            "total_operation_time": 0.10543546676635743,
+            "total_operation_time": 0.10531077384948731,
             "estimated_code_lines": 250,
             "estimated_dev_hours": 3.0,
             "error_handling": false,
@@ -319,21 +319,21 @@
             "cost_optimization": false
           },
           "with_package": {
-            "setup_time": 0.010065078735351562,
-            "tokenize_time": 1.8596649169921875e-05,
+            "setup_time": 0.010066032409667969,
+            "tokenize_time": 1.3828277587890625e-05,
             "token_count": 6750,
-            "chunking_time": 0.001142740249633789,
+            "chunking_time": 0.001116037368774414,
             "chunks_created": 5,
-            "context_selection_time": 7.3909759521484375e-06,
+            "context_selection_time": 8.821487426757812e-06,
             "chunks_selected": 5,
             "tokens_used": 8153,
             "api_calls_with_compression": 1,
             "estimated_cost_with_compression": 0.0065804999999999995,
             "tokens_saved": 2363,
             "cost_savings": 0.0065804999999999995,
-            "cached_tokenize_time": 7.152557373046875e-07,
-            "cache_speedup": 26.0,
-            "total_operation_time": 0.011233806610107422,
+            "cached_tokenize_time": 4.76837158203125e-07,
+            "cache_speedup": 29.0,
+            "total_operation_time": 0.011204719543457031,
             "estimated_code_lines": 3,
             "estimated_dev_hours": 0.1,
             "error_handling": true,
@@ -343,14 +343,14 @@
           },
           "improvements": {
             "tokenization": {
-              "without": 4.959583282470703,
-              "with": 0.018596649169921875,
-              "speedup": 266.6923076923077
+              "without": 4.828691482543945,
+              "with": 0.013828277587890625,
+              "speedup": 349.1896551724138
             },
             "chunking": {
-              "without": 0.47588348388671875,
-              "with": 1.142740249633789,
-              "speedup": 0.4164406426037972
+              "without": 0.4820823669433594,
+              "with": 1.116037368774414,
+              "speedup": 0.43195898312326425
             },
             "api_efficiency": {
               "api_calls_without": 2,
@@ -383,15 +383,15 @@
         "large": {
           "document": "OpenAI Large",
           "without_package": {
-            "tokenize_time": 0.004576206207275391,
+            "tokenize_time": 0.004733085632324219,
             "token_count": 33750,
-            "chunking_time": 0.002301454544067383,
+            "chunking_time": 0.002151012420654297,
             "chunks_created": 9,
             "api_calls_needed": 9,
             "estimated_cost": 0.050625,
             "manual_api_handling_time": 0.05,
             "estimated_total_api_time": 0.45,
-            "total_operation_time": 0.4568776607513428,
+            "total_operation_time": 0.4568840980529785,
             "estimated_code_lines": 250,
             "estimated_dev_hours": 3.0,
             "error_handling": false,
@@ -400,21 +400,21 @@
             "cost_optimization": false
           },
           "with_package": {
-            "setup_time": 0.00928807258605957,
-            "tokenize_time": 0.0001049041748046875,
+            "setup_time": 0.009839057922363281,
+            "tokenize_time": 5.412101745605469e-05,
             "token_count": 33750,
-            "chunking_time": 0.006117105484008789,
+            "chunking_time": 0.006006479263305664,
             "chunks_created": 23,
-            "context_selection_time": 2.6464462280273438e-05,
+            "context_selection_time": 2.6941299438476562e-05,
             "chunks_selected": 7,
             "tokens_used": 12652,
             "api_calls_with_compression": 2,
             "estimated_cost_with_compression": 0.032905500000000004,
             "tokens_saved": 11813,
             "cost_savings": 0.032905500000000004,
-            "cached_tokenize_time": 1.1920928955078125e-06,
-            "cache_speedup": 88.0,
-            "total_operation_time": 0.01553654670715332,
+            "cached_tokenize_time": 1.9073486328125e-06,
+            "cache_speedup": 28.375,
+            "total_operation_time": 0.015926599502563477,
             "estimated_code_lines": 3,
             "estimated_dev_hours": 0.1,
             "error_handling": true,
@@ -424,14 +424,14 @@
           },
           "improvements": {
             "tokenization": {
-              "without": 4.576206207275391,
-              "with": 0.1049041748046875,
-              "speedup": 43.622727272727275
+              "without": 4.733085632324219,
+              "with": 0.05412101745605469,
+              "speedup": 87.45374449339207
             },
             "chunking": {
-              "without": 2.301454544067383,
-              "with": 6.117105484008789,
-              "speedup": 0.37623260708578554
+              "without": 2.151012420654297,
+              "with": 6.006479263305664,
+              "speedup": 0.35811534950184576
             },
             "api_efficiency": {
               "api_calls_without": 9,
