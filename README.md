@@ -1,36 +1,97 @@
 # Efficient Context Window Manager
 
-Break large context windows into manageable chunks while honoring model's native limits and preserving semantic coherence.
+**Break large context windows into manageable chunks while honoring model's native limits and preserving semantic coherence.**
 
-## Problem
+A production-ready Python package that lets you work with context windows far larger than individual models support. Automatically chunks documents, selects relevant content, manages compression, and calls LLMs efficiently.
 
-Most models have finite context windows:
-- Llama 2: 4k-70k tokens
-- GPT-3.5: 4k-16k tokens
-- GPT-4: 8k-128k tokens
-- Claude: 100k-200k tokens
-- Ollama local models: varies
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
-Even with large context windows, intelligent management reduces costs and improves latency.
+## ⚡ Quick Start
 
-## Solution
+### The Simplest Way (3 lines)
 
-This package provides:
+```python
+from efficient_context_window_manager import ContextWindowManager, efficient_llm_call
 
-1. **Multiple chunking strategies** (recursive, sliding window, semantic, fixed-size)
-2. **Token counting abstraction** (works with any model's tokenizer)
-3. **Context window management** (RAG, summarization, compression)
-4. **LLM integration adapters** (Anthropic, OpenAI, Ollama, custom)
-5. **Compression strategies** (observation masking, summarization, relevance filtering)
+manager = ContextWindowManager(model_name="claude-3-opus-20250219")
+result = efficient_llm_call(manager, documents=your_docs, query="What are the key points?")
+print(result['response'])
+```
 
-## Installation
+### Accumulate Context Then Query
+
+```python
+from efficient_context_window_manager import ContextWindowManager, EfficientLLMCall
+
+call = EfficientLLMCall(ContextWindowManager(model_name="gpt-4"), model_name="gpt-4")
+call.add_context("Doc 1...").add_context("Doc 2...").add_context("Doc 3...")
+result = call.call("Your question?")
+```
+
+## 🎯 The Problem
+
+Most models have finite context windows - intelligent management is essential:
+
+- **Claude**: 100k-200k tokens
+- **GPT-4**: 128k tokens
+- **GPT-3.5**: 16k tokens
+- **Llama**: 4k-70k tokens
+- **Local models**: Varies (often 4k-8k)
+
+Without context management: `Document (500k tokens) → Model fails`
+
+With this package: `Document → Smart chunks → Context window respecting model limits → LLM call`
+
+## ✨ Features
+
+| Feature | Description |
+|---------|-------------|
+| **4 Chunking Strategies** | Recursive (semantic-aware), Sliding Window, Fixed-Size, Semantic (embedding-based) |
+| **Model-Agnostic** | Works with Claude, GPT, Llama, Ollama, or any model |
+| **Auto Tokenization** | Automatically detects and uses the right tokenizer |
+| **Smart Context Management** | Greedy, summarization, compression, sliding window strategies |
+| **Compression Methods** | Observation masking (fast) or semantic summarization (high quality) |
+| **LLM Integrations** | Anthropic Claude, OpenAI GPT, Ollama local, or custom APIs |
+| **Production-Ready** | Token caching, error handling, metrics tracking |
+| **Easy to Use** | Simple function-based interface or powerful class API |
+| **Research-Backed** | Implements SWAT, LLMLingua, RAG best practices |
+
+## 📖 Documentation
+
+- **[HOWTO Guide](HOWTO.md)** ← Start here for comprehensive guide
+- **[Implementation Summary](IMPLEMENTATION_SUMMARY.md)** ← Technical architecture
+- **[Examples](examples/)** ← Working code samples
+- **[API Reference](#api-reference)** ← Complete API docs
+
+## 📦 Installation
 
 ```bash
+# Basic installation
 pip install efficient-context-window-manager
 
-# Optional: for specific integrations
+# With Claude support
 pip install efficient-context-window-manager[anthropic]
+
+# With OpenAI support
 pip install efficient-context-window-manager[openai]
+
+# From source
+git clone https://github.com/kholgade/efficient-context-window-manager.git
+cd efficient-context-window-manager
+pip install -e .
+```
+
+### Environment Setup
+
+Set API keys for the services you use:
+
+```bash
+export ANTHROPIC_API_KEY="sk-ant-..."
+export OPENAI_API_KEY="sk-..."
+
+# For Ollama (local), start the server:
+ollama serve  # Runs on http://localhost:11434 by default
 ```
 
 ## Quick Start
@@ -154,6 +215,37 @@ adapter = OllamaAdapter(
 
 result = adapter.process_with_context(document, query)
 ```
+
+## 🏆 Why This Package?
+
+### Simple vs Complex
+
+```python
+# Without this package - handle everything manually
+chunks = []
+for i in range(0, len(text), 1000):
+    chunks.append(text[i:i+1000])
+# ... estimate tokens ...
+# ... handle API differences ...
+# ... compress if needed ...
+
+# With this package - automatic
+result = efficient_llm_call(manager, text, query)
+```
+
+### Specialized for Context Windows
+
+This package focuses specifically on **context window management** - something general frameworks handle as an afterthought:
+
+| Feature | This Package | LangChain | LLaMA Index |
+|---------|--------------|-----------|-------------|
+| **Context Window Optimization** | ✅ Core focus | ⚠️ Secondary | ⚠️ Secondary |
+| **Compression Strategies** | ✅ 2 methods | ❌ Limited | ❌ Limited |
+| **Chunking Strategies** | ✅ 4 types | ✅ 2 types | ✅ 2 types |
+| **Research-Based (SWAT/LLMLingua)** | ✅ Yes | ⚠️ Partial | ⚠️ Partial |
+| **Simple API** | ✅ Yes | ❌ Complex | ❌ Complex |
+
+---
 
 ## Architecture
 
@@ -344,12 +436,33 @@ tokenizer = AutoTokenizer("claude-3-opus-20250219")  # Anthropic
 tokenizer = AutoTokenizer("meta-llama/Llama-2-7b")   # HuggingFace
 ```
 
-## Examples
+## 💡 Common Use Cases
 
-See `examples/` directory:
-- `basic_usage.py` - Chunking strategies demo
-- `with_anthropic.py` - Anthropic integration
-- `with_openai.py` - OpenAI integration (coming soon)
+See [HOWTO.md](HOWTO.md) for detailed walkthroughs:
+
+1. **PDF/Document Analysis** - Extract text and ask questions
+2. **Multi-Document Analysis** - Query across multiple sources
+3. **RAG Systems** - Combine retrieval with efficient context management
+4. **Local Private Processing** - Use Ollama for privacy
+5. **Chatbots** - Manage conversation history with large context
+6. **Code Analysis** - Process large codebases with context
+
+## 🎓 Examples
+
+Working examples in `examples/` directory:
+
+```bash
+# Basic chunking strategies demo
+python examples/basic_usage.py
+
+# Anthropic Claude integration
+python examples/with_anthropic.py
+
+# Efficient LLM calls (recommended starting point)
+python examples/efficient_llm_call_demo.py
+```
+
+Or check [HOWTO.md](HOWTO.md) for step-by-step guides.
 
 ## Key Concepts
 
