@@ -161,6 +161,34 @@ class CompressionConfig:
 
 
 @dataclass
+class Message:
+    """
+    Represents a message in the tiered memory system.
+
+    Attributes:
+        role: Message role (e.g., "user", "assistant", "tool", "context")
+        content: Message text content
+        token_count: Number of tokens in this message
+        metadata: Additional metadata (source, timestamp, importance, etc)
+
+    Used by: memory module (memory/short_term.py, memory/long_term.py, memory/external.py)
+    """
+    role: str
+    content: str
+    token_count: int = 0
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        """Validate message integrity."""
+        if not self.role:
+            raise ValueError("Message role cannot be empty")
+        if not self.content:
+            raise ValueError("Message content cannot be empty")
+        if self.token_count < 0:
+            raise ValueError(f"token_count must be non-negative, got {self.token_count}")
+
+
+@dataclass
 class TokenizationResult:
     """
     Result from tokenizing text.

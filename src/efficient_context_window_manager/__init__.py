@@ -26,12 +26,21 @@ Example:
 
 __version__ = "0.1.0"
 
-from .types import Chunk, ContextWindow, CompressionConfig, ChunkingStrategy, ProcessingMode
+from .types import (
+    Chunk, ContextWindow, CompressionConfig, ChunkingStrategy, ProcessingMode,
+    Message, ContextStrategyEnum
+)
 from .context_manager import ContextWindowManager
 from .orchestrator import EfficientLLMCall, efficient_llm_call, LLMProvider
+from .core import ContextManager
+from .memory import ShortTermMemory, LongTermMemory, ExternalRetrieval
+from .assembly import ContextAssembler
+from .budgeting import TokenBudgeter
+from .adapters import AutoGenAdapter, CrewAIAdapter, LangGraphAdapter
 
 __all__ = [
     "ContextWindowManager",
+    "ContextManager",
     "EfficientLLMCall",
     "efficient_llm_call",
     "LLMProvider",
@@ -40,4 +49,14 @@ __all__ = [
     "CompressionConfig",
     "ChunkingStrategy",
     "ProcessingMode",
+    "Message",
+    "ContextStrategyEnum",
+    "ShortTermMemory",
+    "LongTermMemory",
+    "ExternalRetrieval",
+    "ContextAssembler",
+    "TokenBudgeter",
+    "AutoGenAdapter",
+    "CrewAIAdapter",
+    "LangGraphAdapter",
 ]
